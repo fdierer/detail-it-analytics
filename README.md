@@ -1,2 +1,1 @@
-# detail-it-analytics
-Analytics dashboard for Detail It Dilute App &amp; Detailit.com.au
+https://fdierer.github.io/detail-it-analytics/dashboard/
