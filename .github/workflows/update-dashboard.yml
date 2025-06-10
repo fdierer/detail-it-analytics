@@ -20,7 +20,8 @@ jobs:
     
     - name: Install dependencies
       run: |
-        pip install google-cloud-bigquery==3.11.4 pandas==2.0.3 db-dtypes==1.1.1
+        pip install --upgrade pip
+        pip install google-cloud-bigquery pandas pyarrow numpy
     
     - name: Generate Dashboard Data
       env:
