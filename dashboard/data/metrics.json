@@ -1,0 +1,13 @@
+{
+  "updated": "2024-01-01T00:00:00",
+  "date": "2024-01-01",
+  "summary": {
+    "daily_active_users": 0,
+    "calculator_conversion_rate": 0,
+    "platform_breakdown": {},
+    "total_interactions": 0
+  },
+  "trend": [],
+  "feature_adoption_percentage": {},
+  "status": "waiting_for_data"
+}
