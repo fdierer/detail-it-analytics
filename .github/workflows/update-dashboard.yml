@@ -1,0 +1,39 @@
+name: Update Analytics Dashboard
+
+on:
+  schedule:
+    # Run at 9am Melbourne time daily
+    - cron: '0 23 * * *'
+  workflow_dispatch: # Allow manual runs
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        pip install google-cloud-bigquery==3.11.4 pandas==2.0.3 db-dtypes==1.1.1
+    
+    - name: Generate Dashboard Data
+      env:
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      run: |
+        echo "$GCP_SA_KEY" > gcp-key.json
+        export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+        python scripts/generate_dashboard.py
+        rm gcp-key.json
+    
+    - name: Commit and Push
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add dashboard/data/
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update dashboard data - $(date +'%Y-%m-%d')" && git push)
