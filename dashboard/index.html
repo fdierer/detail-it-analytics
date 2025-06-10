@@ -18,10 +18,79 @@
             color: #333;
         }
         
+        /* Password Screen Styles */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .password-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .password-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+        
+        .password-submit {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: #1a73e8;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .password-submit:hover {
+            background: #1557b0;
+        }
+        
+        .password-error {
+            color: #ea4335;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Main Dashboard Styles */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            display: none; /* Hidden until password is correct */
         }
         
         header {
@@ -32,9 +101,26 @@
             margin-bottom: 30px;
         }
         
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+        
+        .header-text {
+            flex: 1;
+        }
+        
         h1 {
             font-size: 28px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             color: #1a1a1a;
         }
         
@@ -187,18 +273,46 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Password Protection -->
+    <div class="password-overlay" id="passwordOverlay">
+        <div class="password-container">
+            <h2>Analytics Dashboard</h2>
+            <p style="margin-bottom: 20px; color: #666;">Please enter password to continue</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter password" autofocus>
+            <button class="password-submit" onclick="checkPassword()">Access Dashboard</button>
+            <div class="password-error" id="passwordError">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="container" id="mainContainer">
         <header>
-            <h1>Detail It Analytics</h1>
-            <p class="subtitle">Public Performance Dashboard</p>
-            <p class="last-updated">
-                <span class="status-indicator" id="statusIndicator"></span>
-                Last updated: <span id="lastUpdated">Loading...</span>
-            </p>
+            <div class="header-content">
+                <!-- Logo - you'll need to add your logo file to the dashboard folder -->
+                <img src="logo.png" alt="Detail It Logo" class="logo" onerror="this.style.display='none'">
+                <div class="header-text">
+                    <h1>Detail It Analytics</h1>
+                    <p class="subtitle">Public Performance Dashboard</p>
+                    <p class="last-updated">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        Last updated: <span id="lastUpdated">Loading...</span>
+                    </p>
+                </div>
+            </div>
         </header>
         
         <div class="metrics-grid">
@@ -250,6 +364,36 @@
     </div>
     
     <script>
+        // Password Protection
+        const DASHBOARD_PASSWORD = 'detail2024'; // Change this to your desired password
+        
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('passwordError');
+            
+            if (input === DASHBOARD_PASSWORD) {
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                loadDashboard();
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+        
+        // Allow Enter key to submit password
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+        
+        // Hide error message when typing
+        document.getElementById('passwordInput').addEventListener('input', function() {
+            document.getElementById('passwordError').style.display = 'none';
+        });
+        
+        // Dashboard functionality
         let trendChart = null;
         
         async function loadDashboard() {
@@ -376,12 +520,6 @@
                 }
             });
         }
-        
-        // Load dashboard on page load
-        loadDashboard();
-        
-        // Refresh every 5 minutes
-        setInterval(loadDashboard, 5 * 60 * 1000);
     </script>
 </body>
 </html>
