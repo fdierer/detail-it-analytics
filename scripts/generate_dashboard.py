@@ -159,7 +159,7 @@ def save_empty_metrics():
     """Save empty metrics when no data available"""
     metrics = {
         'updated': datetime.now().isoformat(),
-        'date': datetime.now().strftime('%Y-%m-%d'),
+        'date': datetime.now().strftime('%Y-%m-%d'),  # This should give today's date
         'summary': {
             'daily_active_users': 0,
             'calculator_conversion_rate': 0,
