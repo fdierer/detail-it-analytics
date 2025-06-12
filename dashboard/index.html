@@ -5,353 +5,355 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail It - Analytics Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        color: #333;
-        min-height: 100vh;
-        position: relative;
-        overflow-x: hidden;
-    }
-    
-    /* Background Image */
-    body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url('background.jpg'); /* Add your image to dashboard folder */
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        z-index: -1;
-    }
-    
-    /* Alternative: Gradient Background (if no image) */
-    body.gradient-bg::before {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    /* Password Screen Styles */
-    .password-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-    }
-    
-    .password-container {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-    }
-    
-    .password-input {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        transition: border-color 0.3s;
-    }
-    
-    .password-input:focus {
-        outline: none;
-        border-color: #1a73e8;
-    }
-    
-    .password-submit {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        font-weight: 600;
-        color: white;
-        background: #1a73e8;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    
-    .password-submit:hover {
-        background: #1557b0;
-    }
-    
-    .password-error {
-        color: #ea4335;
-        margin-top: 10px;
-        display: none;
-    }
-    
-    /* Main Container */
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        display: none;
-    }
-    
-    /* Glassmorphism Header */
-    header {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        margin-bottom: 30px;
-        transition: all 0.3s ease;
-    }
-    
-    header:hover {
-        background: rgba(255, 255, 255, 0.75);
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.25);
-    }
-    
-    .header-content {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-    
-    .logo {
-        width: 60px;
-        height: 60px;
-        border-radius: 16px;
-        object-fit: contain;
-        background: rgba(255, 255, 255, 0.5);
-        padding: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .header-text {
-        flex: 1;
-    }
-    
-    h1 {
-        font-size: 28px;
-        margin-bottom: 5px;
-        color: #1a1a1a;
-        font-weight: 600;
-    }
-    
-    .subtitle {
-        color: #555;
-        font-size: 16px;
-        font-weight: 400;
-    }
-    
-    .last-updated {
-        color: #666;
-        font-size: 14px;
-        margin-top: 10px;
-    }
-    
-    /* Glassmorphism Metric Cards */
-    .metrics-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .metric-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 25px;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        transition: all 0.3s ease;
-    }
-    
-    .metric-card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.75);
-        box-shadow: 0 12px 40px rgba(31, 38, 135, 0.25);
-    }
-    
-    .metric-label {
-        font-size: 14px;
-        color: #555;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 500;
-    }
-    
-    .metric-value {
-        font-size: 36px;
-        font-weight: 700;
-        color: #1a73e8;
-        margin-bottom: 5px;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .metric-subtext {
-        font-size: 14px;
-        color: #666;
-    }
-    
-    /* Glassmorphism Chart Container */
-    .chart-container {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        margin-bottom: 20px;
-        min-height: 350px;
-    }
-    
-    .chart-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        color: #333;
-    }
-    
-    /* Platform and Feature Cards */
-    .platform-breakdown {
-        display: flex;
-        gap: 20px;
-        margin-top: 10px;
-    }
-    
-    .platform-item {
-        flex: 1;
-        text-align: center;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.5);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    
-    .platform-name {
-        font-size: 14px;
-        color: #555;
-        margin-bottom: 5px;
-        font-weight: 500;
-    }
-    
-    .platform-value {
-        font-size: 24px;
-        font-weight: 600;
-        color: #1a1a1a;
-    }
-    
-    .feature-list {
-        list-style: none;
-        margin-top: 15px;
-    }
-    
-    .feature-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    
-    .feature-item:last-child {
-        border-bottom: none;
-    }
-    
-    .feature-name {
-        font-size: 14px;
-        color: #555;
-        font-weight: 500;
-    }
-    
-    .feature-percentage {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1a73e8;
-    }
-    
-    /* Status Indicators */
-    .status-indicator {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 8px;
-        box-shadow: 0 0 8px currentColor;
-    }
-    
-    .status-active {
-        background: #34a853;
-        color: #34a853;
-    }
-    
-    .status-waiting {
-        background: #fbbc04;
-        color: #fbbc04;
-    }
-    
-    canvas {
-        max-height: 300px;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .metrics-grid {
-            grid-template-columns: 1fr;
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .platform-breakdown {
-            flex-direction: column;
-            gap: 10px;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Background Image */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            z-index: -1;
+            /* Fallback gradient if image doesn't load */
+            background: url('background.jpg'), linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Password Screen Styles */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .password-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .password-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+        
+        .password-submit {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: #1a73e8;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .password-submit:hover {
+            background: #1557b0;
+        }
+        
+        .password-error {
+            color: #ea4335;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: none;
+        }
+        
+        /* Glassmorphism Header */
+        header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        header:hover {
+            background: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.25);
         }
         
         .header-content {
-            flex-direction: column;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
         
         .logo {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            object-fit: contain;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
-        .metric-card,
-        .chart-container,
-        header {
-            background: rgba(255, 255, 255, 0.85);
+        .header-text {
+            flex: 1;
         }
-    }
-</style>
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            color: #555;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        .last-updated {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        /* Glassmorphism Metric Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.25);
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a73e8;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Glassmorphism Chart Container */
+        .chart-container {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            margin-bottom: 20px;
+            min-height: 350px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        /* Platform and Feature Cards */
+        .platform-breakdown {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .platform-item {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .platform-name {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .platform-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .feature-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-name {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .feature-percentage {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a73e8;
+        }
+        
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 8px currentColor;
+        }
+        
+        .status-active {
+            background: #34a853;
+            color: #34a853;
+        }
+        
+        .status-waiting {
+            background: #fbbc04;
+            color: #fbbc04;
+        }
+        
+        canvas {
+            max-height: 300px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .platform-breakdown {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .metric-card,
+            .chart-container,
+            header {
+                background: rgba(255, 255, 255, 0.85);
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Password Protection -->
@@ -369,7 +371,6 @@
     <div class="container" id="mainContainer">
         <header>
             <div class="header-content">
-                <!-- Logo - you'll need to add your logo file to the dashboard folder -->
                 <img src="logo.png" alt="Detail It Logo" class="logo" onerror="this.style.display='none'">
                 <div class="header-text">
                     <h1>Detail It Analytics</h1>
@@ -432,7 +433,7 @@
     
     <script>
         // Password Protection
-        const DASHBOARD_PASSWORD = 'Rekkif-3duswu-papfav'; // Change this to your desired password
+        const DASHBOARD_PASSWORD = 'detail2024'; // Change this to your desired password
         
         function checkPassword() {
             const input = document.getElementById('passwordInput').value;
@@ -587,6 +588,10 @@
                 }
             });
         }
+        
+        // Test without password for debugging
+        // Comment out the next line to re-enable password protection
+        // document.getElementById('passwordOverlay').style.display = 'none'; document.getElementById('mainContainer').style.display = 'block'; loadDashboard();
     </script>
 </body>
 </html>
