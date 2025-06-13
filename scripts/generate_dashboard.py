@@ -28,6 +28,8 @@ def get_analytics_data():
         if dataset.dataset_id.startswith('analytics_'):
             analytics_dataset = dataset.dataset_id
             break
+            # Override with your specific dataset name
+            analytics_dataset = "analytics_492429472"  # Replace XXX with the full number from BigQuery
     
     if not analytics_dataset:
         print("⏳ No analytics dataset found yet. This is normal for the first 24-48 hours.")
