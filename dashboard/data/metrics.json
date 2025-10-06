@@ -1,21 +1,15 @@
 {
-  "updated": "2025-10-05T23:17:56.570266",
-  "date": "2025-10-04",
+  "updated": "2025-10-06T23:19:56.448101",
+  "date": "2025-10-05",
   "summary": {
-    "daily_active_users": 91,
-    "calculator_conversion_rate": 0.0,
+    "daily_active_users": 121,
+    "calculator_conversion_rate": 0,
     "platform_breakdown": {
-      "Web": 1,
-      "iOS": 90
+      "iOS": 121
     },
     "total_interactions": 0
   },
   "trend": [
-    {
-      "date": "2025-09-28",
-      "users": 131,
-      "calculator_uses": 0
-    },
     {
       "date": "2025-09-29",
       "users": 120,
@@ -45,10 +39,13 @@
       "date": "2025-10-04",
       "users": 91,
       "calculator_uses": 0
+    },
+    {
+      "date": "2025-10-05",
+      "users": 121,
+      "calculator_uses": 0
     }
   ],
-  "feature_adoption_percentage": {
-    "page_view": 1.1
-  },
+  "feature_adoption_percentage": {},
   "status": "active"
 }
